@@ -14,43 +14,24 @@ using namespace std;
 struct board {
     int e[7];
 };
+struct board2 {
+    int o[2];
+};
 struct colb {
     char c[6][4];
 };
 struct tesl {
     string t[21];
 };
-// int rgw = 0, flu = 0;
-// int gwr = 1, luf = 1;
-// int wrg = 2, ufl = 2;
+int fact(int i)
+{
+    int p = 1;
+    for (int j = 2; j <= i; ++j) {
+        p *= j;
+    }
+    return p;
+}
 
-// int rwb = 3, fur = 3;
-// int wbr = 4, urf = 4;
-// int brw = 5, rfu = 5;
-
-// int ryg = 6, fdl = 6;
-// int ygr = 7, dlf = 7;
-// int gry = 8, lfd = 8;
-
-// int rby = 9, frd = 9;
-// int byr = 10, rdf = 10;
-// int yrb = 11, dfr = 11;
-
-// int owg = 12, bul = 12;
-// int wgo = 13, ulb = 13;
-// int gow = 14, lbu = 14;
-
-// int obw = 15, bru = 15;
-// int bwo = 16, rub = 16;
-// int wob = 17, ubr = 17;
-
-// int ogy = 18, bld = 18;
-// int gyo = 19, ldb = 19;
-// int yog = 20, dbl = 20;
-
-// int oyb = 21, bdr = 21;
-// int ybo = 22, drb = 22;
-// int boy = 23, rbd = 23;
 tesl brg(const colb & b){
     tesl arr;
     char col[6]={b.c[0][0],b.c[1][0],b.c[2][0],b.c[3][0],b.c[4][0],b.c[5][0]};
@@ -75,7 +56,6 @@ tesl brg(const colb & b){
 board trans(const colb& b,const tesl& arr){
     board ans;
     string str;
-    // string arr[21]={"rgw","wrg","gwr","rwb","brw","wbr","ryg","gry","ygr","rby","yrb","byr","owg","gow","wgo","obw","wob","bwo","oyb","boy","ybo"};
     str.push_back(b.c[0][0]);
     str.push_back(b.c[3][1]);
     str.push_back(b.c[4][2]);
@@ -198,7 +178,7 @@ void print_board(const colb& b)
 {
     for (int r = 0; r < 6; ++r) {
         for (int c = 0; c < 4; ++c) {
-            printf("%c", b.c[r][c]);
+            printf("%c ", b.c[r][c]);
         }
         printf("\n");
     }
@@ -209,11 +189,11 @@ void read_board(colb& b)
     for (int r = 0; r < 6; ++r) {
         for(int cl = 0; cl < 4; ++cl){
             scanf("%s", &b.c[r][cl]);
-            if (b.c[r][cl]=='r'){
-                b.c[r][cl]='o';
-            }else if (b.c[r][cl]=='o'){
-                b.c[r][cl]='r';
-            }
+            // if (b.c[r][cl]=='r'){
+            //     b.c[r][cl]='o';
+            // }else if (b.c[r][cl]=='o'){
+            //     b.c[r][cl]='r';
+            // }
         }
     }
 }
@@ -250,10 +230,6 @@ board up(const board& b)
 
 enum move { R=1,U=2,F=3,R2=4,U2=5,F2=6,R1=7,U1=8,F1=9};
 
-/*
- * Return a shortest path from src to dest.
- */
-
 int ord(const board& board){
     int val=0;
     int k=6;
@@ -262,10 +238,35 @@ int ord(const board& board){
         val+=v*pow(21,k);
         k-=1;
     }
-    // printf("%d",val);
     return val;
 }
+board2 decode(const board& res){
+    board temp;
+    board2 temp1;
+    int k=0,val=0;
+    for (int i=0;i<7;i++){
+        temp.e[i]=(res.e[i]/3)+1;
+        val+=(res.e[i]%3)*pow(3,k);
+        k++;
+    }
+    int seen[8] = { 0 };
+        int a = 0;
+        int t = 6;
 
+        for (int r = 0; r < 7; ++r) {
+                int v = temp.e[r];
+                int o = 0;
+                for (int i = 1; i < v; ++i) {
+                    if (!seen[i]) { ++o; }
+                }
+                a += o * fact(t);
+                --t;
+                seen[v] = 1;
+    }
+    temp1.o[0]=a;
+    temp1.o[1]=val;
+    return temp1;
+}
 board decode(int ord){
     board node;
     int temp=ord;
@@ -274,31 +275,32 @@ board decode(int ord){
         node.e[r]=temp%21;
         temp=temp/21;
     }
-    // print_board(node);
     return node;
 }
-#define maxi (1800000000) 
+#define maxi1 (5050) 
+#define maxi2 (2190) 
 std::vector<int> solve(const board& src, const board& dest)
 { 
     queue <int> q;
     int cnt=0;
-    int visited[maxi];
-    int parent[maxi];
+    int visited[maxi1][maxi2];
+    int parent[maxi1][maxi2];
     int initial=ord(src);
     int final=ord(dest);
     q.push(ord(src));
-    visited[ord(src)] = U;
+    board2 tem1=decode(src);
+    visited[tem1.o[0]][tem1.o[1]] = U;
     int temp=0;
     while (!q.empty()) {
         int child = q.front();
         q.pop();
         board u=decode(child);
         if (child==final) {
-            /* return the moves to get to u from src. */
             std::vector<int> moves;
             while (child!=initial) {
-                moves.push_back(visited[child]);
-                child=parent[child];
+                board2 tem2=decode(decode(child));
+                moves.push_back(visited[tem2.o[0]][tem2.o[1]]);
+                child=parent[tem2.o[0]][tem2.o[1]];
             }
             std::reverse(moves.begin(), moves.end());
             std::vector<int> ans;
@@ -324,26 +326,26 @@ std::vector<int> solve(const board& src, const board& dest)
         board b = right(u);
         board c = up(u);
 
-        int aord = ord(a);
-        int bord = ord(b);
-        int cord = ord(c);
+        board2 aord = decode(a);
+        board2 bord = decode(b);
+        board2 cord = decode(c);
 
-        if (!visited[aord]) {
-            visited[aord] = F;
-            parent[aord] = child;
-            q.push(aord);
+        if (!visited[aord.o[0]][aord.o[1]]) {
+            visited[aord.o[0]][aord.o[1]] = F;
+            parent[aord.o[0]][aord.o[1]] = child;
+            q.push(ord(a));
             cnt+=1;
         }
-        if (!visited[bord]) {
-            visited[bord] = R;
-            parent[bord] = child;
-            q.push( bord);
+        if (!visited[bord.o[0]][bord.o[1]]) {
+            visited[bord.o[0]][bord.o[1]] = R;
+            parent[bord.o[0]][bord.o[1]] = child;
+            q.push(ord(b));
             cnt+=1;
         }
-        if (!visited[cord]) {
-            visited[cord] = U;
-            parent[cord] = child;
-            q.push(cord);
+        if (!visited[cord.o[0]][cord.o[1]]) {
+            visited[cord.o[0]][cord.o[1]] = U;
+            parent[cord.o[0]][cord.o[1]] = child;
+            q.push(ord(c));
             cnt+=1;
         }
         temp+=1;
@@ -372,52 +374,19 @@ void print_moves(const std::vector<int>& moves)
 
 int main()
 {
-    // board src, dest;
-    // colb src1;
-    // // char gem[6]={'r','b','o','g','w','y'};
-    // // for(int i=0;i<6;i++){
-    // //     for(int j=0;j<4;j++){
-    // //         src1.c[i][j]=gem[i];
-    // //     }
-    // // }
-    // read_board(src1);
-    // // src1.c[5][0]='b';
-    // // src1.c[5][1]='b';
-    // // src1.c[1][0]='w';
-    // // src1.c[1][2]='w';
-    // // src1.c[4][2]='g';
-    // // src1.c[4][3]='g';
-    // // src1.c[3][1]='y';
-    // // src1.c[3][3]='y';
-    // board src2=trans(src1);
-    // print_board(src2);
-    // // read_board(src);
-    // // read_board(dest);
-    // for (int i=0;i<7;i++){
-    //     src.e[i]=(i)*3;
-    //     dest.e[i]=i*3;
-    // }
-    
-    // // dest=up(dest);
-    // dest=front(dest);
-    // // dest=right(dest);
-
-    // print_board(src);
-    // print_board(dest);
-
-    // // auto moves = solve(src, dest);
-    // // print_moves(moves);
     colb src1;
     read_board(src1);
     colb dest1=trans1(src1);
-    // print_board(dest1);
     board src=trans(src1,brg(dest1));
     board dest=trans(dest1,brg(dest1));
+    printf("\n");
     printf("Given Input :\n");
-    print_board(src);
+    printf("\n");
+    print_board(src1);
     printf("\n");
     printf("Destination :\n");
-    print_board(dest);
+    printf("\n");
+    print_board(dest1);
     printf("\n");
     auto moves = solve(src, dest);
     print_moves(moves);
