@@ -129,9 +129,6 @@ board right(const board& b)
 
 enum move { L = 1, R = 2, U = 3, D = 4 };
 
-/*
- * Return a shortest path from src to dest.
- */
 
 int ord(const board& board){
     int val=0;
@@ -156,7 +153,6 @@ board decode(int ord){
             temp=temp/7;
         }
     }
-    // print_board(node);
     return node;
 }
 #define maxi (40355000) 
@@ -175,7 +171,6 @@ std::vector<int> solve(const board& src, const board& dest)
         q.pop();
         board u=decode(child);
         if (child==final) {
-            /* return the moves to get to u from src. */
             std::vector<int> moves;
             while (child!=initial) {
                 moves.push_back(visited[child]);
@@ -241,15 +236,7 @@ int main()
     board src, dest;
 
     read_board(src);
-    // read_board(dest);
-    for (int r = 0; r < 3; ++r) {
-        for (int c = 0; c < 3; ++c) {
-            // src.e[r][c]=1;
-            dest.e[r][c]=2;
-        }
-    }
-    // src.e[1][1]=0;
-    dest.e[1][1]=0;
+    read_board(dest);
     printf("Given Input :\n");
     print_board(src);
     printf("\n");
