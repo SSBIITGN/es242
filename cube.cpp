@@ -189,11 +189,11 @@ void read_board(colb& b)
     for (int r = 0; r < 6; ++r) {
         for(int cl = 0; cl < 4; ++cl){
             scanf("%s", &b.c[r][cl]);
-            // if (b.c[r][cl]=='r'){
-            //     b.c[r][cl]='o';
-            // }else if (b.c[r][cl]=='o'){
-            //     b.c[r][cl]='r';
-            // }
+            if (b.c[r][cl]=='r'){
+                b.c[r][cl]='o';
+            }else if (b.c[r][cl]=='o'){
+                b.c[r][cl]='r';
+            }
         }
     }
 }
@@ -282,7 +282,6 @@ board decode(int ord){
 std::vector<int> solve(const board& src, const board& dest)
 { 
     queue <int> q;
-    int cnt=0;
     int visited[maxi1][maxi2];
     int parent[maxi1][maxi2];
     int initial=ord(src);
@@ -303,50 +302,73 @@ std::vector<int> solve(const board& src, const board& dest)
                 child=parent[tem2.o[0]][tem2.o[1]];
             }
             std::reverse(moves.begin(), moves.end());
-            std::vector<int> ans;
-            int prev=0;
-            for (auto cur:moves){
-                auto tem=cur;
-                if (cur==prev){
-                    int fla=ans.back();
-                    ans.pop_back();
-                    if(fla==cur){
-                        tem+=3;
-                    }else{
-                        tem+=6;
-                    }
-                }
-                prev=cur;
-                ans.push_back(tem);
-            }
-            return ans;
+            return moves;
         }
 
-        board a = front(u);
-        board b = right(u);
-        board c = up(u);
+        board a1 = front(u);
+        board a2 = front(a1);
+        board a3 = front(a2);
+        board b1 = right(u);
+        board b2 = right(b1);
+        board b3 = right(b2);
+        board c1 = up(u);
+        board c2 = up(c1);
+        board c3 = up(c2);
 
-        board2 aord = decode(a);
-        board2 bord = decode(b);
-        board2 cord = decode(c);
+        board2 a1ord = decode(a1);
+        board2 a2ord = decode(a2);
+        board2 a3ord = decode(a3);
+        board2 b1ord = decode(b1);
+        board2 b2ord = decode(b2);
+        board2 b3ord = decode(b3);
+        board2 c1ord = decode(c1);
+        board2 c2ord = decode(c2);
+        board2 c3ord = decode(c3);
 
-        if (!visited[aord.o[0]][aord.o[1]]) {
-            visited[aord.o[0]][aord.o[1]] = F;
-            parent[aord.o[0]][aord.o[1]] = child;
-            q.push(ord(a));
-            cnt+=1;
+        if (!visited[a1ord.o[0]][a1ord.o[1]]) {
+            visited[a1ord.o[0]][a1ord.o[1]] = F;
+            parent[a1ord.o[0]][a1ord.o[1]] = child;
+            q.push(ord(a1));
         }
-        if (!visited[bord.o[0]][bord.o[1]]) {
-            visited[bord.o[0]][bord.o[1]] = R;
-            parent[bord.o[0]][bord.o[1]] = child;
-            q.push(ord(b));
-            cnt+=1;
+        if (!visited[a2ord.o[0]][a2ord.o[1]]) {
+            visited[a2ord.o[0]][a2ord.o[1]] = F1;
+            parent[a2ord.o[0]][a2ord.o[1]] = child;
+            q.push(ord(a2));
         }
-        if (!visited[cord.o[0]][cord.o[1]]) {
-            visited[cord.o[0]][cord.o[1]] = U;
-            parent[cord.o[0]][cord.o[1]] = child;
-            q.push(ord(c));
-            cnt+=1;
+        if (!visited[a3ord.o[0]][a3ord.o[1]]) {
+            visited[a3ord.o[0]][a3ord.o[1]] = F2;
+            parent[a3ord.o[0]][a3ord.o[1]] = child;
+            q.push(ord(a3));
+        }
+        if (!visited[b1ord.o[0]][b1ord.o[1]]) {
+            visited[b1ord.o[0]][b1ord.o[1]] = R;
+            parent[b1ord.o[0]][b1ord.o[1]] = child;
+            q.push(ord(b1));
+        }
+        if (!visited[b2ord.o[0]][b2ord.o[1]]) {
+            visited[b2ord.o[0]][b2ord.o[1]] = R2;
+            parent[b2ord.o[0]][b2ord.o[1]] = child;
+            q.push(ord(b2));
+        }
+        if (!visited[b3ord.o[0]][b3ord.o[1]]) {
+            visited[b3ord.o[0]][b3ord.o[1]] = R1;
+            parent[b3ord.o[0]][b3ord.o[1]] = child;
+            q.push(ord(b3));
+        }
+        if (!visited[c1ord.o[0]][c1ord.o[1]]) {
+            visited[c1ord.o[0]][c1ord.o[1]] = U;
+            parent[c1ord.o[0]][c1ord.o[1]] = child;
+            q.push(ord(c1));
+        }
+        if (!visited[c2ord.o[0]][c2ord.o[1]]) {
+            visited[c2ord.o[0]][c2ord.o[1]] = U2;
+            parent[c2ord.o[0]][c2ord.o[1]] = child;
+            q.push(ord(c2));
+        }
+        if (!visited[c3ord.o[0]][c3ord.o[1]]) {
+            visited[c3ord.o[0]][c3ord.o[1]] = U1;
+            parent[c3ord.o[0]][c3ord.o[1]] = child;
+            q.push(ord(c3));
         }
         temp+=1;
     }
